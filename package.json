@@ -9,7 +9,8 @@
   "scripts": {
     "build": "concurrently \"yarn build:es\" \"yarn build:types\"",
     "build:es": "babel src --out-dir lib --extensions .js,.jsx,.ts,.tsx",
-    "build:types": "tsc --emitDeclarationOnly"
+    "build:types": "tsc --emitDeclarationOnly",
+    "prepublishOnly": "yarn build"
   },
   "devDependencies": {
     "@babel/cli": "^7.10.5",
