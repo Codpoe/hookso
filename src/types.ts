@@ -8,8 +8,6 @@ export type Subscriber<K = any> = (value: K) => void;
 
 export type DepsFn<K> = (value: K) => any[];
 
-export type UseStore<K> = (depsFn?: DepsFn<K>) => K;
-
 export type MapStateToProps<K = any, P = any> = (state: K) => P;
 
 export type MixinProps<Props, InjectProps> = {
@@ -26,6 +24,6 @@ export type HOC<InjectProps> = <Props extends MixinProps<Props, InjectProps>>(
 
 export interface CreateResult<K> {
   Provider: React.ComponentType<any>;
-  use: UseStore<K>;
-  connect: <P>(mapStateToProps: MapStateToProps<K, P>) => HOC<P>;
+  use: (depsFn?: DepsFn<K>) => K;
+  connect: <P>(mapStateToProps?: MapStateToProps<K, P>) => HOC<P>;
 }
