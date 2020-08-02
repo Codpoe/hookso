@@ -39,9 +39,9 @@ npm install hookso
 // counter.ts
 
 import { useState } from 'react';
-import { use } from 'hookso';
+import { create } from 'hookso';
 
-export const useCounter = use(() => {
+export const counter = create(() => {
   const [count, setCount] = useState(0);
   const decrement = () => setCount(count - 1);
   const increment = () => setCount(count + 1);
@@ -56,10 +56,10 @@ export const useCounter = use(() => {
 // App.tsx
 
 import React from 'react';
-import { useCounter } from './counter';
+import { counter } from './counter';
 
 export default () => {
-  const { count, decrement, increment } = useCounter();
+  const { count, decrement, increment } = counter.use();
 
   return (
     <>
@@ -71,37 +71,69 @@ export default () => {
 };
 ```
 
-然后把 `useCounter.Provider` 挂载到合适的祖先节点上。
+然后把 `counter.Provider` 挂载到合适的祖先节点上。
 
 ```tsx
 // index.tsx
 
 import React from 'react';
 import { render } from 'react-dom';
-import { useCounter } from './counter';
+import { counter } from './counter';
 import App from './App';
 
 const rootElement = document.getElementById('root');
 
 render(
-  <useCounter.Provider>
+  <counter.Provider>
     <App />
-  </useCounter.Provider>,
+  </counter.Provider>,
   rootElement
 );
 ```
 
-至此，仅使用一个 API `use` 就完成了计数器的状态管理。
+至此，仅使用一个 API `create` 就完成了计数器的状态管理。
+
+### 在 Class 组件中使用 store
+
+```tsx
+// App.tsx
+
+import React from 'react';
+import { counter } from './counter';
+
+export interface AppProps {
+  count: number;
+  decrement: () => void;
+  increment: () => void;
+}
+
+class App extends React.Component<AppProps> {
+  render() {
+    const { count, decrement, increment } = this.props;
+
+    return (
+      <>
+        count is: {count}
+        <button onClick={decrement}>-</button>
+        <button onClick={increment}>+</button>
+      </>
+    );
+  }
+}
+
+// connect
+export default counter.connect()(App);
+```
 
 ### 性能优化
 
-`use`方法返回的 `useXXX` 支持传入一个 `depsFn` 函数，在每次 hooks 状态值变化时会先调用 `depsFn`，然后把返回的依赖数组与上一次的进行对比，如果不一致就会触发一次组件状态更新，类似于 `useMemo`、`useEffect` 的第二个参数。
+`create` 方法返回的 `use` 支持传入一个 `depsFn` 函数，在每次 hooks 状态值变化时会先调用 `depsFn`，然后把返回的依赖数组与上一次的进行对比，如果不一致就会触发一次组件状态更新，作用类似于 `useMemo`、`useEffect` 的第二个参数。
 
 ```ts
-const counter = useCounter(state => [state.x, state.y]);
+const { count } = counter.use(state => [state.x, state.y]);
 ```
 
-这里在使用 `useCounter` 时传入了一个 `depsFn`，实现的效果是当 `state.x` 或 `state.y` 有变化时才会触发组件状态更新。
+这里在使用 `use` 时传入了一个 `depsFn`，实现的效果是当 `state.x` 或 `state.y` 有变化时才会触发组件状态更新。
 
 ## API
 
@@ -115,27 +147,39 @@ function provide<T, K>(
 ): React.ComponentType<any>;
 ```
 
-### inject
+### useStore
 
 ```ts
-function inject<K = any>(key: StorKey): UseStoreFn<K>;
+function useStore<K = any>(key: StorKey, depsFn?: DepsFn<K>): K;
 ```
 
-### use
+### connect
 
 ```ts
-function use<T, K>(hook: StoreHook<T, K>, params: T): UseStore<K>;
+function connect<P, K = any>(
+  key: StorKey,
+  mapStateToProps: MapStateToProps<K, P> = s => s as any
+): HOC<P>;
 ```
 
-其实 `use` 只是为了易用而对 `provide` 和 `inject` 做了一点微小的封装，直接使用 `provide` 和 `inject` 也能实现一样的效果。
+### create
+
+```ts
+function create<T, K>(
+  hook: StoreHook<T | undefined, K>,
+  params?: T
+): CreateResult<K>;
+```
+
+其实 `create` 只是为了易用而对 `provide`、`useStore`、`connect` 做了一点微小的封装，直接使用这三个 API 也能实现一样的效果。
 
 ```ts
 // counter.ts
 
 import { useState } from 'react';
-import { provide, inject } from 'hookso';
+import { provide, useStore } from 'hookso';
 
-export const CounterKey = Symbol('Counter');
+export const counterKey = Symbol('Counter');
 
 const hook = () => {
   const [count, setCount] = useState(0);
@@ -145,7 +189,7 @@ const hook = () => {
   return { count, decrement, increment };
 };
 
-export const CounterProvider = provide(CounterKey, hook);
+export const CounterProvider = provide(counterKey, hook);
 
-export const useCounter = inject<ReturnType<typeof hook>>(CounterKey);
+export const useCounter = () = useStore<ReturnType<typeof hook>>(counterKey);
 ```
