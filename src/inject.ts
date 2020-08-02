@@ -1,9 +1,9 @@
 import { useContext, useState, useRef, useEffect } from 'react';
 import { StoresContext, DEFAULT_STORE_STATE } from './constants';
-import { StorKey, UseStoreFn, Subscriber } from './types';
+import { StorKey, UseStore, Subscriber } from './types';
 
-export function inject<K = any>(key: StorKey): UseStoreFn<K> {
-  const useStore: UseStoreFn<K> = depsFn => {
+export function inject<K = any>(key: StorKey): UseStore<K> {
+  const useStore: UseStore<K> = depsFn => {
     const store = useContext(StoresContext)[key as any];
     const [state, setState] = useState(() => {
       if (!store) {
