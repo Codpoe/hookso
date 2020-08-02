@@ -118,7 +118,7 @@ function provide<T, K>(
 ### inject
 
 ```ts
-function inject<K = any>(key: StorKey): UseStore<K>;
+function inject<K = any>(key: StorKey): UseStoreFn<K>;
 ```
 
 ### use

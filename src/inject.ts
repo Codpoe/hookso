@@ -1,8 +1,8 @@
 import { useContext, useState, useRef, useEffect } from 'react';
 import { StoresContext, DEFAULT_STORE_STATE } from './constants';
-import { StorKey, UseStoreFn, UseStore, Subscriber } from './types';
+import { StorKey, UseStoreFn, Subscriber } from './types';
 
-export function inject<K = any>(key: StorKey): UseStore<K> {
+export function inject<K = any>(key: StorKey): UseStoreFn<K> {
   const useStore: UseStoreFn<K> = depsFn => {
     const store = useContext(StoresContext)[key as any];
     const [state, setState] = useState(() => {
@@ -45,5 +45,5 @@ export function inject<K = any>(key: StorKey): UseStore<K> {
     return state;
   };
 
-  return useStore as UseStore<K>;
+  return useStore;
 }
