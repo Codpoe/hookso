@@ -1,9 +1,9 @@
 import { useContext, useState, useMemo, useRef, useEffect } from 'react';
 import { StoresContext, DEFAULT_STORE_STATE } from './constants';
-import { StorKey, DepsFn, Subscriber } from './types';
+import { Store } from './Store';
+import { StoreKey, DepsFn, Subscriber } from './types';
 
-export function useStore<K = any>(key: StorKey, depsFn?: DepsFn<K>): K {
-  const store = useContext(StoresContext)[key as any];
+function useSubscribe<T, K>(store: Store<T, K>, depsFn?: DepsFn<K>): K {
   const [state, setState] = useState(() => {
     if (!store) {
       return DEFAULT_STORE_STATE;
@@ -18,7 +18,7 @@ export function useStore<K = any>(key: StorKey, depsFn?: DepsFn<K>): K {
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const firstDeps = useMemo(() => (depsFn ? depsFn(state) : []), []);
+  const firstDeps = useMemo(() => (depsFn ? depsFn(store.state) : []), []);
   const depsRef = useRef<any[]>(firstDeps);
 
   useEffect(() => {
@@ -45,4 +45,16 @@ export function useStore<K = any>(key: StorKey, depsFn?: DepsFn<K>): K {
   }, [store, depsFn]);
 
   return state;
+}
+
+export function useStore<K = any>(key: StoreKey, depsFn?: DepsFn<K>): K {
+  const store = useContext(StoresContext)[key as any];
+  return useSubscribe(store, depsFn);
+}
+
+export function useGlobalStore<K = any>(
+  store: Store<any, K>,
+  depsFn?: DepsFn<K>
+): K {
+  return useSubscribe(store, depsFn);
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 
-export type StorKey = symbol | string;
+export type StoreKey = symbol | string;
 
 export type StoreHook<T = any, K = any> = (params: T) => K;
 

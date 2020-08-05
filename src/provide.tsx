@@ -1,20 +1,21 @@
 import React, { useContext, useMemo } from 'react';
 import { Store } from './Store';
 import { Executor } from './Executor';
+import { render } from './render';
 import { StoresContext } from './constants';
-import { StorKey, StoreHook } from './types';
+import { StoreKey, StoreHook } from './types';
 
 export function provide<T, K>(
-  key: StorKey,
+  key: StoreKey,
   hook: StoreHook<undefined, K>
 ): React.ComponentType<any>;
 export function provide<T, K>(
-  key: StorKey,
+  key: StoreKey,
   hook: StoreHook<T, K>,
   params: T
 ): React.ComponentType<any>;
 export function provide<T, K>(
-  key: StorKey,
+  key: StoreKey,
   hook: StoreHook<T | undefined, K>,
   params?: T
 ): React.ComponentType<any> {
@@ -24,7 +25,7 @@ export function provide<T, K>(
     const store = useMemo(() => new Store(hook, params), []);
     const stores = useMemo(() => {
       // proto chain
-      const _stores: Record<StorKey, Store> = Object.create(
+      const _stores: Record<StoreKey, Store> = Object.create(
         parentStores || null
       );
       // fix: Type 'symbol' cannot be used as an index type
@@ -44,4 +45,22 @@ export function provide<T, K>(
   };
 
   return Provider;
+}
+
+export function provideGlobal<T, K>(
+  hook: StoreHook<undefined, K>
+): Store<undefined, K>;
+export function provideGlobal<T, K>(
+  hook: StoreHook<T, K>,
+  params: T
+): Store<T, K>;
+export function provideGlobal<T, K>(
+  hook: StoreHook<T | undefined, K>,
+  params?: T
+): Store<T | undefined, K> {
+  const store = new Store(hook, params);
+
+  render(<Executor store={store} />);
+
+  return store;
 }

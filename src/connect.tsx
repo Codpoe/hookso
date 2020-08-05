@@ -1,9 +1,9 @@
 import React, { useMemo, useCallback, useRef } from 'react';
 import { useStore } from './useStore';
-import { StorKey, MapStateToProps, HOC, DepsFn } from './types';
+import { StoreKey, MapStateToProps, HOC, DepsFn } from './types';
 
 export function connect<P, K = any>(
-  key: StorKey,
+  key: StoreKey,
   mapStateToProps: MapStateToProps<K, P> = s => s as any
 ): HOC<P> {
   const wrap: HOC<P> = Component => {
