@@ -1,5 +1,5 @@
-import { provide } from './provide';
-import { useStore } from './useStore';
+import { provide, provideGlobal } from './provide';
+import { useStore, useGlobalStore } from './useStore';
 import { connect } from './connect';
 import { StoreHook, CreateResult, DepsFn, MapStateToProps } from './types';
 
@@ -17,4 +17,19 @@ export function create<T, K>(
     connect: <P>(mapStateToProps?: MapStateToProps<K, P>) =>
       connect<P, K>(key, mapStateToProps),
   };
+}
+
+export function createGlobal<T, K>(
+  hook: StoreHook<undefined, K>
+): CreateResult<K>['use'];
+export function createGlobal<T, K>(
+  hook: StoreHook<T, K>,
+  params: T
+): CreateResult<K>['use'];
+export function createGlobal<T, K>(
+  hook: StoreHook<T | undefined, K>,
+  params?: T
+): CreateResult<K>['use'] {
+  const store = provideGlobal(hook, params);
+  return (depsFn?: DepsFn<K>) => useGlobalStore(store, depsFn);
 }
