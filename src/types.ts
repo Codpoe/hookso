@@ -22,7 +22,10 @@ export type HOC<InjectProps> = <Props extends MixinProps<Props, InjectProps>>(
   Component: React.ComponentType<Props>
 ) => React.ComponentType<Omit<Props, keyof InjectProps>>;
 
-export interface CreateResult<K> {
+export interface FacadeStore<T, K> {
+  key: symbol;
+  hook: StoreHook<T, K>;
+  params: T;
   Provider: React.ComponentType<any>;
   use: (depsFn?: DepsFn<K>) => K;
   connect: <P>(mapStateToProps?: MapStateToProps<K, P>) => HOC<P>;
