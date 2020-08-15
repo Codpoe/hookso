@@ -1,0 +1,137 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Provider 1`] = `
+<DocumentFragment>
+  <div>
+    <p>
+      0
+    </p>
+    <button>
+      Decrement
+    </button>
+    <button>
+      Increment
+    </button>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Provider 2`] = `
+<DocumentFragment>
+  <div>
+    <p>
+      -1
+    </p>
+    <button>
+      Decrement
+    </button>
+    <button>
+      Increment
+    </button>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`connect 1`] = `
+<DocumentFragment>
+  <div>
+    0
+  </div>
+</DocumentFragment>
+`;
+
+exports[`create & use 1`] = `
+<DocumentFragment>
+  <div>
+    <p>
+      0
+    </p>
+    <button>
+      Decrement
+    </button>
+    <button>
+      Increment
+    </button>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`create & use 2`] = `
+<DocumentFragment>
+  <div>
+    <p>
+      -1
+    </p>
+    <button>
+      Decrement
+    </button>
+    <button>
+      Increment
+    </button>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`create with params 1`] = `
+<DocumentFragment>
+  <div>
+    <p>
+      10
+    </p>
+    <button>
+      Decrement
+    </button>
+    <button>
+      Increment
+    </button>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`create with params 2`] = `
+<DocumentFragment>
+  <div>
+    <p>
+      11
+    </p>
+    <button>
+      Decrement
+    </button>
+    <button>
+      Increment
+    </button>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`use with deps 1`] = `
+<DocumentFragment>
+  <div>
+    <p>
+      0
+    </p>
+    <button>
+      Decrement
+    </button>
+    <button>
+      Increment
+    </button>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`use with deps 2`] = `
+<DocumentFragment>
+  <div>
+    <p>
+      0
+    </p>
+    <button>
+      Decrement
+    </button>
+    <button>
+      Increment
+    </button>
+  </div>
+</DocumentFragment>
+`;

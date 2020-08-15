@@ -18,8 +18,11 @@ export function create<T, K>(
   const name = hook.name || 'AnonymousStore';
   const key = Symbol(name);
 
-  const OwnProvider: React.FC = () =>
-    React.createElement(Provider, { stores: [{ key, hook, params }] });
+  const OwnProvider: React.FC = props =>
+    React.createElement(Provider, {
+      ...props,
+      stores: [{ key, hook, params }],
+    });
 
   OwnProvider.displayName = `${name}Provider`;
 
