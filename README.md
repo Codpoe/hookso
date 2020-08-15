@@ -4,8 +4,8 @@ English | [简体中文](./README.zh-CN.md)
 
 React state manager based on hooks. Inspired by [umijs/hox](https://github.com/umijs/hox).
 
-[![npm](https://img.shields.io/npm/v/hookso)](https://www.npmjs.com/package/hookso)
-![npm peer dependency version](https://img.shields.io/npm/dependency-version/hookso/peer/react)
+[![npm](https://img.shields.io/npm/v/hookso?style=for-the-badge)](https://www.npmjs.com/package/hookso)
+![npm peer dependency version](https://img.shields.io/npm/dependency-version/hookso/peer/react?style=for-the-badge)
 
 ## Why
 
@@ -16,10 +16,10 @@ Hox is a great hooks-based state management tool, but it has several problems:
 
 ## Features
 
-- ✨ Use react hooks to define and manage state without any magic
-- ✅ Minimalist API, with Typescript type hints
-- 🚀 can use react context
-- 🎉 Decentralized state management
+- ✨Use react hooks to define and manage state without any magic
+- ✅Minimal API, with Typescript type hints
+- 🚀can use react context
+- 🎉Decentralized state management
 
 ## Online experience
 
@@ -33,7 +33,7 @@ yarn add hookso
 npm install hookso
 ```
 
-## Getting Started
+## Getting started
 
 ### Create store
 
@@ -127,71 +127,28 @@ class App extends React.Component<AppProps> {
 export default counter.connect()(App);
 ```
 
+### One Provider provides multiple stores
+
+```tsx
+import React from 'react';
+import { Provider } from 'hookso';
+import { user } from './user';
+import { counter } from './counter';
+import App from './App';
+
+export default () => (
+  <Provider stores={[user, counter]}>
+    <App />
+  </Provider>
+);
+```
+
 ### Performance optimization
 
-The `use` returned by the `create` method supports passing in a `depsFn` function. Each time the hooks state value changes, `depsFn` will be called first, and then the returned dependency array will be compared with the previous one. If it is inconsistent, it will Trigger a component status update, similar to the second parameter of `useMemo` and `useEffect`.
+The `use` returned by the `create` method supports passing in a `depsFn` function, and each time the hooks state value changes, `depsFn` will be called first, and then the returned dependency array will be compared with the previous one. If it is inconsistent, it will Trigger a component status update, which is similar to the second parameter of `useMemo` and `useEffect`.
 
 ```ts
 const { count } = counter.use(state => [state.x, state.y]);
 ```
 
 Here, when using `use`, a `depsFn` is passed in. The effect achieved is that the component state update will be triggered when `state.x` or `state.y` changes.
-
-## API
-
-### provide
-
-```ts
-function provide<T, K>(
-  key: StorKey,
-  hook: StoreHook<T, K>,
-  params: T
-): React.ComponentType<any>;
-```
-
-### useStore
-
-```ts
-function useStore<K = any>(key: StorKey, depsFn?: DepsFn<K>): K;
-```
-
-### connect
-
-```ts
-function connect<P, K = any>(
-  key: StorKey,
-  mapStateToProps: MapStateToProps<K, P> = s => s as any
-): HOC<P>;
-```
-
-### create
-
-```ts
-function create<T, K>(
-  hook: StoreHook<T | undefined, K>,
-  params?: T
-): CreateResult<K>;
-```
-
-In fact, `create` only encapsulates `provide`, `useStore`, and `connect` for ease of use. The same effect can be achieved by directly using these three APIs.
-
-```ts
-// counter.ts
-
-import {useState} from'react';
-import {provide, useStore} from'hookso';
-
-export const counterKey = Symbol('Counter');
-
-const hook = () => {
-  const [count, setCount] = useState(0);
-  const decrement = () => setCount(count-1);
-  const increment = () => setCount(count + 1);
-
-  return {count, decrement, increment };
-};
-
-export const CounterProvider = provide(counterKey, hook);
-
-export const useCounter = () = useStore<ReturnType<typeof hook>>(counterKey);
-```
