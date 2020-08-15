@@ -4,8 +4,8 @@
 
 基于 hooks 的 React 状态管理工具。灵感源自 [umijs/hox](https://github.com/umijs/hox)。
 
-[![npm](https://img.shields.io/npm/v/hookso)](https://www.npmjs.com/package/hookso)
-![npm peer dependency version](https://img.shields.io/npm/dependency-version/hookso/peer/react)
+[![npm](https://img.shields.io/npm/v/hookso?style=for-the-badge)](https://www.npmjs.com/package/hookso)
+![npm peer dependency version](https://img.shields.io/npm/dependency-version/hookso/peer/react?style=for-the-badge)
 
 ## 为什么
 
@@ -127,6 +127,22 @@ class App extends React.Component<AppProps> {
 export default counter.connect()(App);
 ```
 
+### 一个 Provider 提供多个 store
+
+```tsx
+import React from 'react';
+import { Provider } from 'hookso';
+import { user } from './user';
+import { counter } from './counter';
+import App from './App';
+
+export default () => (
+  <Provider stores={[user, counter]}>
+    <App />
+  </Provider>
+);
+```
+
 ### 性能优化
 
 `create` 方法返回的 `use` 支持传入一个 `depsFn` 函数，在每次 hooks 状态值变化时会先调用 `depsFn`，然后把返回的依赖数组与上一次的进行对比，如果不一致就会触发一次组件状态更新，作用类似于 `useMemo`、`useEffect` 的第二个参数。
@@ -136,62 +152,3 @@ const { count } = counter.use(state => [state.x, state.y]);
 ```
 
 这里在使用 `use` 时传入了一个 `depsFn`，实现的效果是当 `state.x` 或 `state.y` 有变化时才会触发组件状态更新。
-
-## API
-
-### provide
-
-```ts
-function provide<T, K>(
-  key: StorKey,
-  hook: StoreHook<T, K>,
-  params: T
-): React.ComponentType<any>;
-```
-
-### useStore
-
-```ts
-function useStore<K = any>(key: StorKey, depsFn?: DepsFn<K>): K;
-```
-
-### connect
-
-```ts
-function connect<P, K = any>(
-  key: StorKey,
-  mapStateToProps: MapStateToProps<K, P> = s => s as any
-): HOC<P>;
-```
-
-### create
-
-```ts
-function create<T, K>(
-  hook: StoreHook<T | undefined, K>,
-  params?: T
-): CreateResult<K>;
-```
-
-其实 `create` 只是为了易用而对 `provide`、`useStore`、`connect` 做了一点微小的封装，直接使用这三个 API 也能实现一样的效果。
-
-```ts
-// counter.ts
-
-import { useState } from 'react';
-import { provide, useStore } from 'hookso';
-
-export const counterKey = Symbol('Counter');
-
-const hook = () => {
-  const [count, setCount] = useState(0);
-  const decrement = () => setCount(count - 1);
-  const increment = () => setCount(count + 1);
-
-  return { count, decrement, increment };
-};
-
-export const CounterProvider = provide(counterKey, hook);
-
-export const useCounter = () = useStore<ReturnType<typeof hook>>(counterKey);
-```
